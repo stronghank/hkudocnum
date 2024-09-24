@@ -1,0 +1,52 @@
+{
+  "name": "document-number-management-system",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start -p 3001",
+    "lint": "next lint",
+    "test-db": "dotenv -e .env -- ts-node --esm --project tsconfig.test.json scripts/test-db.ts",
+    "dev:local": "dotenv -e .env.local next dev"
+  },
+  "dependencies": {
+    "@emotion/cache": "^11.13.1",
+    "@emotion/react": "^11.13.0",
+    "@emotion/styled": "^11.13.0",
+    "@mui/icons-material": "^5.16.5",
+    "@mui/material": "^5.16.5",
+    "@mui/material-nextjs": "^5.16.4",
+    "@mui/x-date-pickers": "^7.11.1",
+    "axios": "^1.7.2",
+    "date-fns": "^3.6.0",
+    "mssql": "^11.0.1",
+    "next": "14.2.5",
+    "next-auth": "^4.24.7",
+    "next-transpile-modules": "^10.0.1",
+    "react": "^18",
+    "react-dom": "^18",
+    "sass": "^1.77.8",
+    "utils": "^0.3.1"
+  },
+  "devDependencies": {
+    "@types/mssql": "^9.1.5",
+    "@types/node": "^20",
+    "@types/react": "^18",
+    "@types/react-dom": "^18",
+    "css-loader": "^7.1.2",
+    "dotenv": "^16.0.3",
+    "dotenv-cli": "^7.4.2",
+    "eslint": "^8",
+    "eslint-config-next": "14.2.5",
+    "style-loader": "^4.0.0",
+    "ts-node": "^10.9.2",
+    "typescript": "^5"
+  },
+  "ts-node": {
+    "compilerOptions": {
+      "module": "commonjs"
+    }
+  }
+}
