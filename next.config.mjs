@@ -57,6 +57,10 @@ const nextConfig = {
         source: '/auth/error',
         destination: '/docnum/auth/error',
       },
+      {
+        source: '/auth/access-denied',
+        destination: '/docnum/auth/access-denied',
+      },
     ];
   },
 };

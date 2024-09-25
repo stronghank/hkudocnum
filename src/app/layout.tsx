@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import { AppRouterCacheProvider } from '@mui/material-nextjs/v13-appRouter';
 import ThemeRegistry from '@/components/ThemeRegistry';
-import Header from '@/components/Header';
+import ConditionalHeader from '@/components/ConditionalHeader';
 import Footer from '@/components/Footer';
 import { Providers } from '@/components/Providers';
 import './globals.css';
@@ -22,7 +22,7 @@ export default function RootLayout({
         <Providers>
           <AppRouterCacheProvider>
             <ThemeRegistry>
-              <Header />
+              <ConditionalHeader />
               <main style={{ flex: 1 }}>{children}</main>
               <Footer />
             </ThemeRegistry>

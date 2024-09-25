@@ -36,7 +36,7 @@ export async function POST(request: NextRequest) {
     );
     const count = countResult[0].count + 1;
 
-    const documentNumber = `M${count}/${month}${year}`;
+    const documentNumber = `M.${count}/${month}${year}`;
 
     const staffUid = session.user.uid || '';
     const staffName = session.user.name || '';

@@ -66,9 +66,9 @@ export const authOptions: NextAuthOptions = {
       if (account && profile) {
         const keycloakProfile = profile as KeycloakProfile;
         token.uid = keycloakProfile.preferred_username || '';
-
+    
         console.log("Keycloak Profile:", keycloakProfile);
-
+    
         if (keycloakProfile.sub) {
           const adminAccessToken = await getAdminAccessToken();
           if (adminAccessToken) {
@@ -78,21 +78,20 @@ export const authOptions: NextAuthOptions = {
               token.hkuno = userData.attributes?.HKUno?.[0];
               token.name = userData.attributes?.Name?.[0] || keycloakProfile.name;
             }
-
+    
             const userRoles = await fetchUserRoles(keycloakProfile.sub, adminAccessToken);
             if (userRoles) {
               console.log("User Roles:", userRoles);
-              token.roles = userRoles.realmMappings?.map((role: any) => role.name) || [];
-
+              token.roles = userRoles.realmMappings?.map((role: { name: string }) => role.name) || [];
+    
               // Check if user has at least one allowed role
-              const hasAllowedRole = token.roles.some(role => ALLOWED_ROLES.includes(role));
+              const hasAllowedRole = token.roles.some((role: string) => ALLOWED_ROLES.includes(role));
               if (!hasAllowedRole) {
                 throw new Error("You do not have permission to access this system.");
               }
-
+    
               // Set isAdmin flag
               token.isAdmin = token.roles.includes(ADMIN_ROLE);
-
             }
           } else {
             console.error("Failed to obtain admin access token");
@@ -111,6 +110,23 @@ export const authOptions: NextAuthOptions = {
       }
       console.log("Options.ts return session: ", session);
       return session;
+    },
+    async signIn({ user, account, profile, email, credentials }) {
+      const keycloakProfile = profile as KeycloakProfile;
+      if (keycloakProfile.sub) {
+        const adminAccessToken = await getAdminAccessToken();
+        if (adminAccessToken) {
+          const userRoles = await fetchUserRoles(keycloakProfile.sub, adminAccessToken);
+          if (userRoles) {
+            const roles = userRoles.realmMappings?.map((role: { name: string }) => role.name) || [];
+            const hasAllowedRole = roles.some((role: string) => ALLOWED_ROLES.includes(role));
+            if (!hasAllowedRole) {
+              return '/docnum/auth/access-denied';
+            }
+          }
+        }
+      }
+      return true;
     },
   },
   pages: {

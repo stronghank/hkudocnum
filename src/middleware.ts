@@ -5,7 +5,7 @@ import { getToken } from 'next-auth/jwt';
 export async function middleware(request: NextRequest) {
   const token = await getToken({ req: request });
 
-  if (!token && !request.nextUrl.pathname.startsWith('/docnum/api/auth')) {
+  if (!token && !request.nextUrl.pathname.startsWith('/docnum/api/auth') && !request.nextUrl.pathname.startsWith('/docnum/auth/access-denied')) {
     return NextResponse.redirect(new URL('/docnum/auth/signin', request.url));
   }
 
@@ -13,5 +13,5 @@ export async function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ['/docnum', '/docnum/generate', '/docnum/query', '/docnum/admin'],
+  matcher: ['/docnum', '/docnum/generate', '/docnum/query', '/docnum/admin', '/docnum/api/:path*'],
 };
