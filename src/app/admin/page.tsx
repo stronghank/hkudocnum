@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect, useCallback } from 'react';
-import { Typography, Box, TextField, Button, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Container, Grid, IconButton, Snackbar, CircularProgress } from '@mui/material';
+import { Typography, Box, TextField, Button, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Container, Grid, IconButton, Snackbar, CircularProgress, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle } from '@mui/material';
 import EditIcon from '@mui/icons-material/Edit';
 import SaveIcon from '@mui/icons-material/Save';
 import CancelIcon from '@mui/icons-material/Cancel';
@@ -54,6 +54,8 @@ export default function Admin() {
   const itemsPerPage = 10;
   const router = useRouter();
   const [currentSearchCriteria, setCurrentSearchCriteria] = useState<URLSearchParams | null>(null);
+  const [confirmDialogOpen, setConfirmDialogOpen] = useState(false);
+  const [currentEditId, setCurrentEditId] = useState<string | null>(null);
 
   const fetchDocuments = useCallback(async (newPage: number, searchParams?: URLSearchParams) => {
     setIsLoading(true);
@@ -169,6 +171,19 @@ export default function Admin() {
   };
 
   const handleSave = async (id: string) => {
+    if (editedSubject.trim().length === 0) {
+      setSnackbarMessage('Document title must contain at least one non-space character');
+      setSnackbarOpen(true);
+      return;
+    }
+    setCurrentEditId(id);
+    setConfirmDialogOpen(true);
+  };
+
+  const confirmSave = async () => {
+    setConfirmDialogOpen(false);
+    if (currentEditId === null) return;
+
     try {
       const response = await fetch('/docnum/api/admin/update-subject', {
         method: 'PUT',
@@ -176,20 +191,20 @@ export default function Admin() {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${session?.accessToken}`,
         },
-        body: JSON.stringify({ id, subject: editedSubject }),
+        body: JSON.stringify({ id: currentEditId, subject: editedSubject.trim() }),
       });
-  
+
       if (!response.ok) {
         throw new Error('Failed to update subject');
       }
-  
+
       const updatedDocument = await response.json();
-  
+
       setSearchResults(prevResults =>
         prevResults.map(doc =>
-          doc.id === id ? { 
-            ...doc, 
-            subject: editedSubject,
+          doc.id === currentEditId ? {
+            ...doc,
+            subject: editedSubject.trim(),
             modifiedAt: updatedDocument.modifiedAt
           } : doc
         )
@@ -203,6 +218,7 @@ export default function Admin() {
       setSnackbarOpen(true);
     }
   };
+
 
   const handleCancel = () => {
     setEditingId(null);
@@ -437,6 +453,27 @@ export default function Admin() {
           value={currentSearchCriteria?.toString() || ''} 
         />
       </Box>
+      <Dialog
+        open={confirmDialogOpen}
+        onClose={() => setConfirmDialogOpen(false)}
+        aria-labelledby="alert-dialog-title"
+        aria-describedby="alert-dialog-description"
+      >
+        <DialogTitle id="alert-dialog-title">{"Confirm Edit"}</DialogTitle>
+        <DialogContent>
+          <DialogContentText id="alert-dialog-description">
+            Are you sure you want to save the edited title?
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setConfirmDialogOpen(false)} color="primary">
+            No
+          </Button>
+          <Button onClick={confirmSave} color="primary" autoFocus>
+            Yes
+          </Button>
+        </DialogActions>
+      </Dialog>
       <Snackbar
         open={snackbarOpen}
         autoHideDuration={6000}

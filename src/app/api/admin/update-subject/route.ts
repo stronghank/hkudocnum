@@ -24,10 +24,14 @@ export async function PUT(request: NextRequest) {
     return NextResponse.json({ message: 'Missing required fields' }, { status: 400 });
   }
 
+  if (subject.trim().length === 0) {
+    return NextResponse.json({ message: 'Document title must contain at least one non-space character' }, { status: 400 });
+  }
+
   try {
     await executeQuery(
       'UPDATE documents SET subject = @p1, modifiedAt = @p2 WHERE id = @p3',
-      [subject, formattedDate, id]
+      [subject.trim(), formattedDate, id]
     );
 
     // Fetch the updated document
