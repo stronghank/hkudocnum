@@ -21,7 +21,7 @@ export default function Generate() {
     setGeneratedNumber('');
 
     if (!documentName.trim()) {
-      setError('Document name is required');
+      setError('Document title must contain at least one character (number, symbol, or English alphabet).');
       return;
     }
 
@@ -40,7 +40,8 @@ export default function Generate() {
       });
 
       if (!response.ok) {
-        throw new Error('Failed to generate document number');
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Failed to generate document number');
       }
 
       const data = await response.json();
@@ -48,7 +49,9 @@ export default function Generate() {
       setSnackbarMessage("Document number generated successfully");
       setShowSnackbar(true);
     } catch (err) {
-      setError('Failed to generate document number. Please try again.');
+      setError(err instanceof Error ? err.message : 'Failed to generate document number. Please try again.');
+      setSnackbarMessage(err instanceof Error ? err.message : 'Failed to generate document number. Please try again.');
+      setShowSnackbar(true);
     }
   };
 
@@ -64,22 +67,12 @@ export default function Generate() {
     return <Typography>Access Denied</Typography>;
   }
 
-
   return (
     <Container maxWidth="sm">
       <Box sx={{ my: 4, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
         <Typography variant="h5" component="h1" gutterBottom>
           <b>Generate Document Number</b>
         </Typography>
-        {/*session ? (
-          <Typography variant="body2" sx={{ mb: 2 }}>
-            Logged in as: {session.user?.name} ({session.user?.email})
-          </Typography>
-        ) : (
-          <Typography variant="body2" sx={{ mb: 2, color: 'error.main' }}>
-            You must be logged in to generate a document number
-          </Typography>
-        )*/}
         <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1, width: '100%' }}>
           <TextField
             margin="normal"

@@ -21,8 +21,11 @@ export async function POST(request: NextRequest) {
   const body = await request.json();
   const { subject } = body;
 
-  if (!subject) {
-    return NextResponse.json({ message: 'Subject is required' }, { status: 400 });
+  // Check if subject is empty or only contains whitespace
+  if (!subject || !subject.trim()) {
+    return NextResponse.json({ 
+      message: 'Document title must contain at least one character (number, symbol, or English alphabet).' 
+    }, { status: 400 });
   }
 
   try {
@@ -45,7 +48,7 @@ export async function POST(request: NextRequest) {
 
     await executeQuery(
       'INSERT INTO documents (staffUid, staffName, staffEmail, subject, documentNumber, createdAt, modifiedAt) VALUES (@p1, @p2, @p3, @p4, @p5, @p6, @p7)',
-      [staffUid, staffName, staffEmail, subject, documentNumber, formattedDate, formattedDate]
+      [staffUid, staffName, staffEmail, subject.trim(), documentNumber, formattedDate, formattedDate]
     );
 
     return NextResponse.json({ documentNumber });
