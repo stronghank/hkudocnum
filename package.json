@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "start": "next start -p 3001",
+    "start": "next start -p 3002",
     "lint": "next lint",
     "test-db": "dotenv -e .env -- ts-node --esm --project tsconfig.test.json scripts/test-db.ts",
     "dev:local": "dotenv -e .env.local next dev"
